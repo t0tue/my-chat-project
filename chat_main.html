@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar-left">
+            <h2>Channels</h2>
+            <ul class="channel-list" id="channel_list">
+            </ul>
+            <button class="add-btn" id="create-channel-btn">+</button>
+        </aside>
+
+        <main class="chat-area">
+            <h2 id="channel-title">채널을 선택하거나 생성하세요</h2>
+            <button class="settings-btn" id="settingsBtn">
+            ⚙️
+            </button>
+            
+
+            <div class="settings-menu" id="settingsMenu" disabled>
+                <button class="menu-item" id="invite-channel-btn">멤버 초대하기</button>
+                <button class="menu-item delete" id="exit-channel-btn">채널 나가기</button>
+                <button class="menu-item delete" id="delete-channel-btn">채널 삭제하기</button>
+            </div>
+            <div class="messages" id="outputArea">
+            </div>
+
+            <div class="preview" id="preview">
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="Type a message..."  disabled/>
+
+                <input type="file" id="imageFile" accept="image/*" multiple style="display: none;" disabled/>
+
+                <button class="upload-btn" id="fileUpload" onclick="document.getElementById('imageFile').click()" disabled>📎</button>
+
+                <button class="send-btn" id="send-btn" onclick="sendMessage()" disabled>➡️</button>
+            </div>
+        </main>
+
+        <aside class="sidebar-right">
+            <h2>Users</h2>
+            <ul class="user-list" id="user-list"></ul>
+        </aside>
+        <div id="channel-modal" style="display: none;">
+            <div class="modal-content">
+            <h3>새 채널 생성</h3>
+            <input type="text" id="channel-name-input" placeholder="채널 이름 입력">
+            <hr>
+
+            <label for="invite-email-input">사용자 초대 (이메일):</label>
+            <div class="input-group">
+                <input type="email" id="invite-email-input" placeholder="초대할 사용자의 이메일">
+                <button id="check-email-btn">추가</button>
+            </div>
+
+            <p id="invite-warning-text" class="warning-text"></p>
+        
+            <div id="invited-users-list" class="invited-list-container">
+                </div>
+
+            <div class="modal-actions">
+                <button id="save-channel-btn">확인</button>
+                <button id="cancel-channel-btn">취소</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="theme-toggle">🌙</button>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
