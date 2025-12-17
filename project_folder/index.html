@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Google 로그인</title>
+
+    <style>
+        
+        body {
+            height: 100vh; 
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            flex-direction: column; 
+            margin: 0; 
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0; 
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        #google-sign-in-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4285f4; 
+            color: white;
+            border: none;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25);
+            transition: background-color 0.3s;
+        }
+
+        #google-sign-in-button:hover {
+            background-color: #357ae8;
+        }
+    </style>
+</head>
+<body>
+    <h1>웹사이트 로그인</h1>
+
+    <button id="google-sign-in-button">
+        Google 계정으로 로그인
+    </button>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyByGjsbzMNtt5oP4-WQdP3GQYj17kCZZTg",
+            authDomain: "web-chat-project-5add6.firebaseapp.com",
+            projectId: "web-chat-project-5add6",
+            storageBucket: "web-chat-project-5add6.firebasestorage.app",
+            messagingSenderId: "717726064112",
+            appId: "1:717726064112:web:041d2112ada17ef9359135",
+            measurementId: "G-708GHVNSWG"
+        };
+
+        // 🌟 ReferenceError 해결: CDN이 로드된 후 firebase.initializeApp을 호출합니다.
+        const app = firebase.initializeApp(firebaseConfig);
+        
+        // 🌟 auth와 db 인스턴스를 전역 변수로 정의합니다.
+        const auth = firebase.auth(app);
+        const db = firebase.firestore(app);
+
+
+        // ======= B. 로그인 및 데이터 저장 로직 (main.js 내용) =======
+
+        /*사용자 정보를 Firestore의 'users' 컬렉션에 저장하거나 업데이트합니다.*/
+        async function saveUserToFirestore(user) {
+    
+            const userRef = db.collection("users").doc(user.uid); 
+            
+            const userData = {
+                uid: user.uid,
+                displayName: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL,
+                lastLogin: new Date().toISOString(),
+                createdAt: user.metadata.creationTime,
+            };
+
+            try {
+                // merge: true 옵션으로 기존 필드를 유지하며 업데이트
+                await userRef.set(userData, { merge: true }); 
+                console.log("Firestore에 사용자 정보 저장 완료:", user.uid);
+            } catch (e) {
+                console.error("Firestore에 사용자 정보 저장 중 오류 발생: ", e);
+            }
+        }
+
+        //로그인 성공 후 지정된 페이지로 이동합니다.
+        function redirectToNextPage() {
+            window.location.href = "chat_main.html"; 
+        }
+
+        // Google 계정으로 로그인 및 후속 작업을 처리합니다.
+        async function signInWithGoogleAndSave() {
+            // GoogleAuthProvider는 firebase.auth.GoogleAuthProvider를 통해 접근
+            const provider = new firebase.auth.GoogleAuthProvider(); 
+
+            try {
+                // signInWithPopup은 auth 인스턴스를 통해 호출
+                const result = await auth.signInWithPopup(provider); 
+                const user = result.user;
+                console.log("Google 로그인 성공. 사용자:", user.displayName);
+
+                await saveUserToFirestore(user);
+
+                redirectToNextPage();
+
+            } catch (error) {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+
+                if (errorCode !== 'auth/popup-closed-by-user') {
+                   console.error("Google 로그인 중 오류 발생:", errorCode, errorMessage);
+                   alert(`로그인 오류: ${errorMessage}`);
+                }
+            }
+        }
+
+        // HTML 문서가 완전히 로드된 후 이벤트 리스너 연결
+        document.addEventListener('DOMContentLoaded', () => {
+            const signInButton = document.getElementById('google-sign-in-button');
+            
+            if (signInButton) {
+                // 버튼 클릭 시 로그인 함수 실행
+                signInButton.addEventListener('click', signInWithGoogleAndSave);
+            }
+        });
+
+    </script>
+</body>
+</html>
