@@ -1,17 +1,17 @@
+require('dotenv').config();
 const firebaseConfig = {
-    apiKey: "AIzaSyByGjsbzMNtt5oP4-WQdP3GQYj17kCZZTg",
-    authDomain: "web-chat-project-5add6.firebaseapp.com",
-    projectId: "web-chat-project-5add6",
-    storageBucket: "web-chat-project-5add6.firebasestorage.app", // 사용하지 않지만 구성에서 유지
-    messagingSenderId: "717726064112",
-    appId: "1:717726064112:web:041d2112ada17ef9359135",
-    measurementId: "G-708GHVNSWG"
-};
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJECTID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDERID,
+    appId: process.env.FIREBASE_APPID,
+    measurementId: process.env.FIREBASE_MEASUREMENTID
+};    
 
-// ReferenceError 해결: CDN이 로드된 후 firebase.initializeApp을 호출합니다.
 const app = firebase.initializeApp(firebaseConfig);
         
-// auth와 db 인스턴스를 전역 변수로 정의합니다.
+
 const db = firebase.firestore(app);
 const auth = firebase.auth(app);
 const btn = document.getElementById("theme-toggle");
@@ -927,5 +927,6 @@ saveChannelBtn.addEventListener('click', async () => { // ⭐ async 키워드 �
         alert("채널 생성에 실패했습니다. (콘솔 확인)");
     }
 });
+
 
 });
