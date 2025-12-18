@@ -1,26 +1,10 @@
-require('dotenv').config();
-        const firebaseConfig = {
-            apiKey: process.env.FIREBASE_API_KEY,
-            authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-            projectId: process.env.FIREBASE_PROJECTID,
-            storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-            messagingSenderId: process.env.FIREBASE_MESSAGING_SENDERID,
-            appId: process.env.FIREBASE_APPID,
-            measurementId: process.env.FIREBASE_MEASUREMENTID
-        };    
-        
-
-        // 🌟 ReferenceError 해결: CDN이 로드된 후 firebase.initializeApp을 호출합니다.
-        const app = firebase.initializeApp(firebaseConfig);
-        
-        // 🌟 auth와 db 인스턴스를 전역 변수로 정의합니다.
-        const auth = firebase.auth(app);
-        const db = firebase.firestore(app);
+import {API_KEY} from './secret.js';
+const app = firebase.initializeApp(API_KEY);
+const auth = firebase.auth(app);
+const db = firebase.firestore(app);
 
 
-        // ======= B. 로그인 및 데이터 저장 로직 (main.js 내용) =======
-
-        /*사용자 정보를 Firestore의 'users' 컬렉션에 저장하거나 업데이트합니다.*/
+//사용자 정보를 Firestore의 'users' 컬렉션에 저장
         async function saveUserToFirestore(user) {
     
             const userRef = db.collection("users").doc(user.uid); 
