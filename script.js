@@ -546,9 +546,6 @@ async function deleteCurrentChannel() {
     console.log("메시지 및 채널 삭제 시작...");
     
     try {
-        // =========================================================
-        // 1. 해당 채널의 모든 메시지 삭제
-        // =========================================================
         
         // 해당 channelId를 가진 모든 메시지 문서 조회
         const messagesSnapshot = await db.collection('messages')
@@ -685,9 +682,6 @@ auth.onAuthStateChanged(user => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 💡 사진 업로드 관련 요소 제거: fileInput, previewArea는 DOM에서 제외해야 합니다.
-    // const fileInput = document.getElementById('imageFile');
-    // const previewArea = document.getElementById('preview');
     const userInput = document.getElementById('userInput');
     
     const settingsBtn = document.getElementById('settingsBtn');
@@ -864,7 +858,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cancelChannelBtn.addEventListener('click', () => {
         hideChannelModal();
     });
-
+    
     // 💡 확인 버튼 클릭 이벤트: Firestore 저장 및 모달 닫기
     saveChannelBtn.addEventListener('click', () => {
         const currentUser = firebase.auth().currentUser;
@@ -904,10 +898,11 @@ document.addEventListener('DOMContentLoaded', () => {
         memberUids = Array.from(new Set(memberUids));
         
     });
-    // 💡 확인 버튼 클릭 이벤트: Firestore 저장 및 모달 닫기
+    
+let isCreatingChannel = false;
 saveChannelBtn.addEventListener('click', async () => { // ⭐ async 키워드 추가
     const currentUser = firebase.auth().currentUser;
-    
+    if (isCreatingChannel) return;
     if (!currentUser) {
         alert("채널을 생성하려면 먼저 로그인해야 합니다.");
         return;
@@ -946,6 +941,12 @@ saveChannelBtn.addEventListener('click', async () => { // ⭐ async 키워드 �
     
     // ⭐⭐⭐ 핵심 수정: Firestore에 데이터 저장 ⭐⭐⭐
     try {
+        isCreatingChannel = true; // 잠금
+        saveChannelBtn.disabled = true; // 버튼 비활성화 시각화
+        saveChannelBtn.textContent = "생성 중...";
+
+        let memberUids = Array.from(new Set([...invitedMembers.map(m => m.uid), currentUser.uid]));
+      
         await db.collection('channels').add({
             name: newChannelName,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -963,11 +964,17 @@ saveChannelBtn.addEventListener('click', async () => { // ⭐ async 키워드 �
     } catch (error) {
         console.error("채널 생성 중 오류 발생:", error);
         alert("채널 생성에 실패했습니다. (콘솔 확인)");
+    } finally {
+        isCreatingChannel = false; // 잠금 해제
+        saveChannelBtn.disabled = false;
+        saveChannelBtn.textContent = "생성";
     }
+  
 });
 
 
 });
+
 
 
 
