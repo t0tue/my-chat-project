@@ -176,10 +176,11 @@ async function leaveCurrentChannel() {
     }
 }
 
+let isSending = false;
 
-// 💡 텍스트 메시지만 전송하는 통합 함수 (사진 관련 로직 제거됨)
 async function sendMessage() {
-    // 1. 현재 채널 ID 확인
+    if (isSending) return; 
+  
     if (!currentChannelId) {
         alert("채널을 선택해야 메시지를 보낼 수 있습니다.");
         return;
@@ -202,7 +203,7 @@ async function sendMessage() {
     }
 
     try {
-        // 메시지 데이터 객체 생성
+        isSending = true;
         const messageData = {
             channelId: currentChannelId, // ⭐ 현재 채널 ID 저장
             uid: currentUser.uid,
@@ -217,11 +218,13 @@ async function sendMessage() {
         
         // 4. 입력 필드 초기화
         inputElement.value = '';
-        // clearImagePreview(); // 제거됨
         
     } catch (error) {
         console.error("메시지 전송 중 오류 발생:", error);
         alert("메시지 전송에 실패했습니다.");
+      inputElement.value = inputText; // 실패 시 텍스트 복구
+    } finally {
+      isSending = false;
     }
 }
 
@@ -242,7 +245,8 @@ function disableInputs() {
 
 // 채널 선택 시 호출되는 함수
 async function selectChannel(id, name) {
-    // 1. 현재 채널 ID 업데이트
+    if (currentChannelId === id) return;
+  
     currentChannelId = id;
     
     // 2. UI 업데이트: 제목 변경 및 선택 강조
@@ -278,13 +282,51 @@ async function selectChannel(id, name) {
     // 4. disabled 프로퍼티를 false로 설정하여 입력/전송 필드를 활성화합니다.
     if (inputBOX) { inputBOX.disabled = false; }
     if (sendBOX) { sendBOX.disabled = false; }
-    
-    // 4. ⭐ 기존 멤버 리스너 해제 및 새 리스너 설정 (핵심 수정 부분)
-    if (membersUnsubscribe) {
-        membersUnsubscribe(); // 이전 채널의 멤버 리스너 해제
-    }
 
+    // 4. 기존 리스너 해제
+    if (membersUnsubscribe) membersUnsubscribe();
+
+    const userListUl = document.getElementById('user-list');
     const channelRef = db.collection('channels').doc(id);
+
+    membersUnsubscribe = channelRef.onSnapshot(async (doc) => {
+        if (!doc.exists) return;
+
+        const memberUids = doc.data().members || [];
+        
+        // 중요: 데이터를 모두 가져온 뒤 '한 번에' 렌더링하기 위해 임시 HTML 생성
+        try {
+            const memberNamePromises = memberUids.map(uid => 
+                db.collection('users').doc(uid).get().then(uDoc => {
+                    if (uDoc.exists) {
+                        const d = uDoc.data();
+                        return d.displayName || d.email || "Unknown";
+                    }
+                    return "Unknown";
+                })
+            );
+
+            const memberNames = await Promise.all(memberNamePromises);
+
+            // ⭐ UI 업데이트 직전에 한 번 더 비우고, innerHTML로 한 번에 교체
+            // 이렇게 하면 연타 시 appendChild가 겹치는 문제를 원천 차단합니다.
+            let newContent = "";
+            memberNames.forEach(name => {
+                newContent += `
+                    <li>
+                        <span class="avatar gray"></span> 
+                        ${name}
+                    </li>
+                `;
+            });
+            
+            if (userListUl) {
+                userListUl.innerHTML = newContent;
+            }
+        } catch (err) {
+            console.error("멤버 로드 오류:", err);
+        }
+    });
 
     // 💡 새 멤버 리스너 설정: 채널 문서의 변화를 실시간 감지
     membersUnsubscribe = channelRef.onSnapshot(async (doc) => {
@@ -927,6 +969,7 @@ saveChannelBtn.addEventListener('click', async () => { // ⭐ async 키워드 �
 
 
 });
+
 
 
 
