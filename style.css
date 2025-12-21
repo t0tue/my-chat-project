@@ -334,89 +334,11 @@ h2 {
     white-space: normal;
 }
 
-/* 📸 메시지 버블 내 이미지 스타일 (전송된 이미지) */
-.bubble.image-bubble {
-    padding: 5px;
-    background: none !important; /* 이미지 버블은 배경색을 제거하거나 투명하게 */
-    box-shadow: none !important;
-    max-width: 250px; /* 이미지 최대 너비 설정 */
-}
-
-.bubble.image-bubble img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-}
-
 /* 오른쪽 정렬된 (사용자) 텍스트 버블에 대한 스타일 */
 .message.right .bubble:not(.image-bubble) {
     /* 사용자 메시지를 더 눈에 띄게 파란색 계열로 설정합니다. (텍스트 버블에만 적용) */
     background: #007bff;
     color: white;
-}
-
-/*사진 미리보기 영역*/
-
-/* 📸 사진 미리보기 영역 스타일 */
-.preview {
-    min-height: 0; 
-    max-height: 120px; /* 미리보기 최대 높이 */
-    margin-bottom: 10px;
-    padding: 5px;
-    border: 1px dashed #ddd; 
-    border-radius: 10px;
-    overflow-x: auto; 
-    white-space: nowrap; 
-    display: flex;
-    align-items: center;
-    background: #fcfcfc;
-}
-
-/* 💡 미리보기 아이템 컨테이너 스타일 */
-.preview-item {
-    position: relative; /* 닫기 버튼의 기준점 */
-    margin-right: 10px; 
-    /* 100px x 100px로 크기 고정 */
-    width: 100px;
-    height: 100px;
-    border-radius: 8px;
-    overflow: hidden; /* 이미지가 이 영역을 벗어나지 않도록 */
-}
-
-/* 💡 미리보기 이미지 스타일 */
-.preview-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-/* 💡 닫기 버튼 스타일 */
-.close-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 20px;
-    height: 20px;
-    background: rgba(0, 0, 0, 0.5); /* 반투명 검은색 배경 */
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 14px;
-    line-height: 1;
-    cursor: pointer;
-    opacity: 0; /* 평소에는 숨김 */
-    transition: opacity 0.2s;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    z-index: 5;
-}
-
-/* 💡 호버 시 닫기 버튼 표시 */
-.preview-item:hover .close-btn {
-    opacity: 1; 
 }
 
 
@@ -445,23 +367,6 @@ h2 {
     cursor: pointer;
 }
 
-/* 📎 사진 업로드 버튼 스타일 */
-.upload-btn {
-    /* 전송 버튼과 동일한 크기 */
-    width: 45px;
-    border: none;
-    border-radius: 10px;
-    /* 배경색은 전송 버튼과 비슷하게 설정 */
-    background: #d1d1d1;
-    font-size: 18px;
-    cursor: pointer;
-    /* 아이콘 중앙 정렬 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* 업로드 아이콘 색상 */
-    color: #4a4a4a;
-}
 
 
 /*라이트/다크 모드 토글 버튼*/
@@ -579,19 +484,6 @@ body.dark .modal-content {
     color: #eee;
 }
 
-/* 📸 Dark Mode 미리보기 */
-body.dark .preview {
-    border: 1px dashed #555;
-    background: #353535;
-}
-
-/* 💡 Dark Mode 버블 색상 조정 */
-body.dark .bubble:not(.image-bubble) {
-    /* Dark Mode에서 기본 버블(상대방 메시지) 색상 */
-    background: #3d3d3d;
-    color: #e0e0e0;
-}
-
 body.dark .message.right .bubble:not(.image-bubble) {
     /* Dark Mode에서 사용자 메시지 버블 색상 (파란색 유지) */
     background: #4a8cff;
@@ -611,14 +503,10 @@ body.dark .send-btn {
     color: white;
 }
 
-/* 📎 Dark Mode 업로드 버튼 */
-body.dark .upload-btn {
-    background: #4a4a4a;
-    color: #fff;
-}
 
 /* 💡 Dark Mode 닫기 버튼 스타일 */
 body.dark .preview-item .close-btn {
     background: rgba(255, 255, 255, 0.5); /* Dark Mode에서는 반투명 흰색 */
     color: black;
+
 }
