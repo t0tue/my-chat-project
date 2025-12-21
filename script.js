@@ -202,6 +202,42 @@ async function leaveCurrentChannel() {
     } catch (error) { console.error(error); }
 }
 
+// 1. HTML에서 버튼 가져오기
+const deleteChannelBtn = document.getElementById('delete-channel-btn');
+
+// 2. 클릭 이벤트 연결
+if (deleteChannelBtn) {
+    deleteChannelBtn.addEventListener('click', async () => {
+        if (!currentChannelId) return alert("삭제할 채널을 선택하세요.");
+        
+        // 관리자 권한 확인 로직이 필요할 수 있지만, 우선 삭제 기능부터 활성화합니다.
+        if (!confirm("정말로 이 채널과 모든 메시지를 영구 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
+
+        try {
+            const batch = db.batch();
+            const channelRef = db.collection('channels').doc(currentChannelId);
+
+            // 해당 채널의 모든 메시지 가져와서 삭제 목록에 추가
+            const messagesSnapshot = await db.collection('messages').where('channelId', '==', currentChannelId).get();
+            messagesSnapshot.forEach(doc => {
+                batch.delete(doc.ref);
+            });
+
+            // 채널 자체 삭제
+            batch.delete(channelRef);
+
+            // 한 번에 실행 (Atomic Delete)
+            await batch.commit();
+
+            alert("채널이 완전히 삭제되었습니다.");
+            location.reload(); // 화면 새로고침하여 목록 갱신
+        } catch (error) {
+            console.error("채널 삭제 중 오류 발생:", error);
+            alert("삭제 권한이 없거나 오류가 발생했습니다.");
+        }
+    });
+}
+
 // 인증 상태 감시 및 채널 목록 로드 (중복 제거됨)
 auth.onAuthStateChanged(user => {
     if (user) {
@@ -301,4 +337,5 @@ document.addEventListener('DOMContentLoaded', () => {
         channelModal.style.display = 'none';
     });
 });
+
 
