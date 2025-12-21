@@ -286,7 +286,6 @@ async function selectChannel(id, name) {
     // 4. 기존 리스너 해제
     if (membersUnsubscribe) membersUnsubscribe();
 
-    const userListUl = document.getElementById('user-list');
     const channelRef = db.collection('channels').doc(id);
 
     membersUnsubscribe = channelRef.onSnapshot(async (doc) => {
@@ -969,6 +968,7 @@ saveChannelBtn.addEventListener('click', async () => { // ⭐ async 키워드 �
 
 
 });
+
 
 
 
