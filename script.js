@@ -143,14 +143,17 @@ function displayMessage(message) {
     const urlRegex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     processedText = processedText.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener">${url}</a>`);
 
-    container.innerHTML = `
-        <div class="message-meta">${!isCurrentUser ? `<span class="message-sender">${message.userName}</span>` : ''}</div>
-        <div class="message-content-wrapper">
-            ${isCurrentUser ? `<span class="message-time">${timeStr}</span><button class="delete-btn" onclick="deleteMessage('${message.id}')">x</button>` : ''}
-            <div class="bubble">${processedText.replace(/\n/g, '<br>')}</div>
-            ${!isCurrentUser ? `<span class="message-time">${timeStr}</span>` : ''}
+    // displayMessage 함수 내부의 innerHTML 부분
+container.innerHTML = `
+    ${!isCurrentUser ? `<div class="message-meta"><span class="message-sender">${message.userName}</span></div>` : ''}
+    <div class="message-content-wrapper">
+        <div class="bubble">${processedText.replace(/\n/g, '<br>')}</div>
+        <div class="message-info">
+            <span class="message-time">${timeStr}</span>
+            ${isCurrentUser ? `<button class="delete-btn" onclick="deleteMessage('${message.id}')">x</button>` : ''}
         </div>
-    `;
+    </div>
+`;
     outputArea.appendChild(container);
     outputArea.scrollTop = outputArea.scrollHeight;
 }
@@ -298,3 +301,4 @@ document.addEventListener('DOMContentLoaded', () => {
         channelModal.style.display = 'none';
     });
 });
+
