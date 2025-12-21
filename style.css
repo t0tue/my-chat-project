@@ -1,4 +1,4 @@
-/* 1. 박스 모델 및 초기화 (유지) */
+/* 1. 초기화 및 레이아웃 */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -6,7 +6,7 @@
 body {
     margin: 0;
     background: #e9eaed;
-    font-family: Arial, sans-serif;
+    font-family: 'Malgun Gothic', dotum, sans-serif;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -14,169 +14,106 @@ body {
     min-height: 100vh;
 }
 
-/* 2. 레이아웃 (기존 구조 복구 및 최적화) */
 .container {
     width: 95%;
     height: 95vh;
     background: #ffffff;
     display: grid;
-    grid-template-columns: 250px 1fr 250px; /* 중앙 영역 유연하게 확장 */
-    gap: 0; /* 간격을 0으로 하고 내부 패딩으로 조절 */
+    grid-template-columns: 250px 1fr 250px;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     overflow: hidden;
 }
 
-/* 3. 사이드바 (기존 스타일 유지하되 스크롤 최적화) */
+/* 2. 사이드바 (채널/유저 목록) */
 .sidebar-left, .sidebar-right {
     background: #fafafa;
     padding: 20px;
-    height: 100%;
     overflow-y: auto;
     border-right: 1px solid #eee;
 }
 
-.sidebar-right {
-    border-right: none;
-    border-left: 1px solid #eee;
-}
+.sidebar-right { border-right: none; border-left: 1px solid #eee; }
 
-h2 {
-    margin: 0 0 20px;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.channel-list, .user-list {
-    list-style: none;
-    padding: 0;
-}
-
+.channel-list, .user-list { list-style: none; padding: 0; margin: 0; }
 .channel-list li, .user-list li {
     display: flex;
     align-items: center;
-    padding: 10px;
-    margin-bottom: 5px;
-    font-size: 15px;
+    padding: 12px;
+    margin-bottom: 8px;
     border-radius: 8px;
     cursor: pointer;
-    gap: 10px;
+    transition: 0.2s;
 }
 
-.channel-list li.selected {
-    background-color: #007bff;
-    color: white;
-}
+.channel-list li:hover { background: #f0f0f0; }
+.channel-list li.selected { background: #007bff; color: white; font-weight: bold; }
 
-/* 4. 채널 생성 모달 (기존 양식에 디자인 입힘) */
-#channel-modal {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
+.dot { width: 12px; height: 12px; background: #bbb; border-radius: 50%; margin-right: 10px; }
 
-.modal-content {
-    background: #fff;
-    padding: 25px;
-    border-radius: 15px;
-    width: 350px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-    text-align: left; /* 텍스트 정렬 수정 */
-}
-
-.modal-content h3 { margin: 0 0 15px 0; font-size: 1.1rem; }
-
-#channel-name-input, #invite-email-input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-}
-
-.input-group {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-}
-
-#check-email-btn {
-    padding: 10px 15px;
-    background: #333;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-/* 초대된 유저 목록 디자인 */
-.invited-list-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 10px;
-    min-height: 20px;
-}
-
-.invited-tag {
-    background: #eee;
-    padding: 4px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-    color: #333;
-    border: 1px solid #ccc;
-}
-
-.warning-text {
-    font-size: 12px;
-    color: #d9534f;
-    margin: 5px 0;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.modal-actions button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-#save-channel-btn { background-color: #007bff; color: white; }
-#cancel-channel-btn { background-color: #6c757d; color: white; }
-
-/* 5. 채팅 영역 (기존 스타일 복구) */
+/* 3. 채팅 영역 (핵심 수정 부분) */
 .chat-area {
-    background: #ffffff;
-    padding: 20px;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    background: #ffffff;
     position: relative;
+    height: 100%;
 }
 
+#channel-title {
+    padding: 20px;
+    margin: 0;
+    font-size: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+/* 설정 버튼 ⚙️ */
+.settings-btn {
+    position: absolute;
+    top: 15px; right: 20px;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #f0f0f0;
+    cursor: pointer;
+    font-size: 20px;
+    z-index: 10;
+}
+
+.settings-menu {
+    position: absolute;
+    top: 60px; right: 20px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: none; /* JS에서 active 클래스로 제어 */
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 100;
+    min-width: 150px;
+}
+.settings-menu.active { display: flex; }
+.menu-item {
+    padding: 12px 15px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+}
+.menu-item:hover { background: #f5f5f5; }
+.menu-item.delete { color: #d9534f; }
+
+/* 4. 메시지 버블 스타일 */
 .messages {
     flex: 1;
+    padding: 20px;
     overflow-y: auto;
-    margin-bottom: 20px;
-    padding-right: 5px;
 }
 
-/* 6. 다크모드 대응 (핵심 스타일링) */
-body.dark .container { background: #2a2a2a; }
-body.dark .sidebar-left, body.dark .sidebar-right { background: #252525; border-color: #333; color: #fff; }
-body.dark .chat-area { background: #2a2a2a; }
-body.dark .modal-content { background: #333; color: #fff; }
-body.dark #channel-name-input, body.dark #invite-email-input { background: #1f1f1f; border-color: #444; color: #fff; }
-body.dark .invited-tag { background: #444; color: #eee; border-color: #555; }
+.message { display: flex; margin-bottom: 20px; align-items: flex-end; }
+.message.right { justify-content: flex-end; }
+
+.bubble {
+    max-width: 60%;
+    padding: 10px 15px;
+    border-radius:
