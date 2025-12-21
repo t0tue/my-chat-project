@@ -1,4 +1,4 @@
-/* 1. 박스 모델 및 초기화 */
+/* 1. 박스 모델 및 초기화 (유지) */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -6,7 +6,7 @@
 body {
     margin: 0;
     background: #e9eaed;
-    font-family: 'Pretendard', sans-serif;
+    font-family: Arial, sans-serif;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -14,25 +14,23 @@ body {
     min-height: 100vh;
 }
 
-/* 2. 메인 레이아웃 (Grid 유지) */
+/* 2. 레이아웃 (기존 구조 복구 및 최적화) */
 .container {
     width: 95%;
     height: 95vh;
     background: #ffffff;
     display: grid;
-    /* 좌측(250px) - 중앙(자동) - 우측(250px) 고정 */
-    grid-template-columns: 250px 1fr 250px; 
+    grid-template-columns: 250px 1fr 250px; /* 중앙 영역 유연하게 확장 */
+    gap: 0; /* 간격을 0으로 하고 내부 패딩으로 조절 */
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     overflow: hidden;
 }
 
-/* 3. 사이드바 공통 */
+/* 3. 사이드바 (기존 스타일 유지하되 스크롤 최적화) */
 .sidebar-left, .sidebar-right {
     background: #fafafa;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
     height: 100%;
     overflow-y: auto;
     border-right: 1px solid #eee;
@@ -43,39 +41,142 @@ body {
     border-left: 1px solid #eee;
 }
 
-/* 4. 채팅 영역 (Flex 구조) */
-.chat-area {
-    background: #ffffff;
+h2 {
+    margin: 0 0 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.channel-list, .user-list {
+    list-style: none;
+    padding: 0;
+}
+
+.channel-list li, .user-list li {
     display: flex;
-    flex-direction: column;
-    height: 100%;
-    position: relative;
-    min-width: 0; /* 내부 요소 넘침 방지 */
-}
-
-#channel-title {
-    padding: 20px;
-    margin: 0;
-    font-size: 1.2rem;
-    border-bottom: 1px solid #eee;
-}
-
-.messages {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-.input-area {
-    padding: 20px;
-    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 5px;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
     gap: 10px;
-    border-top: 1px solid #eee;
 }
 
-/* 5. 채널 생성 모달 (기존 디자인 강화) */
+.channel-list li.selected {
+    background-color: #007bff;
+    color: white;
+}
+
+/* 4. 채널 생성 모달 (기존 양식에 디자인 입힘) */
 #channel-modal {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    width: 350px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    text-align: left; /* 텍스트 정렬 수정 */
+}
+
+.modal-content h3 { margin: 0 0 15px 0; font-size: 1.1rem; }
+
+#channel-name-input, #invite-email-input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.input-group {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+#check-email-btn {
+    padding: 10px 15px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* 초대된 유저 목록 디자인 */
+.invited-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+.invited-tag {
+    background: #eee;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.warning-text {
+    font-size: 12px;
+    color: #d9534f;
+    margin: 5px 0;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#save-channel-btn { background-color: #007bff; color: white; }
+#cancel-channel-btn { background-color: #6c757d; color: white; }
+
+/* 5. 채팅 영역 (기존 스타일 복구) */
+.chat-area {
+    background: #ffffff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+}
+
+.messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding-right: 5px;
+}
+
+/* 6. 다크모드 대응 (핵심 스타일링) */
+body.dark .container { background: #2a2a2a; }
+body.dark .sidebar-left, body.dark .sidebar-right { background: #252525; border-color: #333; color: #fff; }
+body.dark .chat-area { background: #2a2a2a; }
+body.dark .modal-content { background: #333; color: #fff; }
+body.dark #channel-name-input, body.dark #invite-email-input { background: #1f1f1f; border-color: #444; color: #fff; }
+body.dark .invited-tag { background: #444; color: #eee; border-color: #555; }
