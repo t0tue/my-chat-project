@@ -1,117 +1,112 @@
-/* --- [1] Reset & 레이아웃 --- */
+/* --- [1] 초기화 및 기본 레이아웃 --- */
 *, *::before, *::after { box-sizing: border-box; }
-
 body {
     margin: 0; background: #e9eaed;
     font-family: 'Malgun Gothic', sans-serif;
     overflow: hidden; display: flex; justify-content: center;
     align-items: center; min-height: 100vh;
-    transition: background 0.3s;
 }
-
 .container {
-    width: 95%; height: 95vh; background: #ffffff;
+    width: 95%; height: 95vh; background: #fff;
     display: grid; grid-template-columns: 250px 1fr 250px;
     border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     overflow: hidden;
 }
 
-/* --- [2] 사이드바 & 리스트 --- */
+/* --- [2] 사이드바 및 리스트 --- */
 .sidebar-left, .sidebar-right {
     background: #fafafa; padding: 25px 15px;
-    display: flex; flex-direction: column;
-    overflow-y: auto; border-right: 1px solid #eee;
+    display: flex; flex-direction: column; overflow-y: auto;
 }
-.sidebar-right { border-right: none; border-left: 1px solid #eee; }
+.sidebar-left { border-right: 1px solid #eee; }
+.sidebar-right { border-left: 1px solid #eee; }
 
 h2 { margin: 0 0 20px; font-size: 18px; color: #333; }
-
-.channel-list, .user-list { list-style: none; padding: 0; }
+.channel-list, .user-list { list-style: none; padding: 0; margin: 0; }
 .channel-list li, .user-list li {
     display: flex; align-items: center; padding: 12px;
-    margin-bottom: 5px; border-radius: 8px; cursor: pointer;
-    transition: background 0.2s; font-size: 15px;
+    margin-bottom: 5px; border-radius: 8px; cursor: pointer; transition: 0.2s;
 }
 .channel-list li:hover { background: #eee; }
 .channel-list li.selected { background: #007bff; color: white; font-weight: bold; }
 
-/* 생성 버튼 (+) */
+.avatar { width: 24px; height: 24px; background: #ccc; border-radius: 50%; margin-right: 10px; }
+
+/* 생성 버튼 (+) 스타일 */
 .add-btn {
     width: 45px; height: 45px; border-radius: 50%; border: none;
-    background: #007bff; color: white; font-size: 24px;
-    cursor: pointer; margin-top: auto; align-self: center;
-    box-shadow: 0 4px 10px rgba(0,123,255,0.3);
+    background: #007bff; color: white; font-size: 24px; cursor: pointer;
+    margin-top: auto; align-self: center; box-shadow: 0 4px 10px rgba(0,123,255,0.3);
 }
 
-/* --- [3] 채팅 영역 & 메시지 배정 --- */
+/* --- [3] 채팅창 및 메시지 배치 --- */
 .chat-area { display: flex; flex-direction: column; background: #fff; position: relative; }
-#channel-title { padding: 20px; margin: 0; border-bottom: 1px solid #eee; }
+#channel-title { padding: 20px; margin: 0; border-bottom: 1px solid #eee; font-size: 1.2rem; }
 
-.messages { 
-    flex: 1; padding: 20px; overflow-y: auto; 
-    display: flex; flex-direction: column; gap: 12px;
-}
+.messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 
-/* ⭐ 메시지 좌우 배치 로직 */
-.message { display: flex; flex-direction: column; max-width: 75%; }
-.message.left { align-self: flex-start; align-items: flex-start; }
-.message.right { align-self: flex-end; align-items: flex-end; }
+/* 메시지 정렬 (핵심) */
+.message { display: flex; flex-direction: column; max-width: 80%; }
+.message.left { align-self: flex-start; }
+.message.right { align-self: flex-end; }
 
+.message-meta { margin-bottom: 4px; font-size: 12px; color: #666; }
 .message-content-wrapper { display: flex; align-items: flex-end; gap: 6px; }
 .message.right .message-content-wrapper { flex-direction: row-reverse; }
 
 .bubble {
-    padding: 10px 14px; border-radius: 15px; font-size: 14.5px;
-    line-height: 1.5; background: #f0f0f0; color: #333;
-    word-break: break-all;
+    padding: 10px 14px; border-radius: 18px; font-size: 14.5px;
+    line-height: 1.5; background: #f0f0f0; color: #333; word-break: break-all;
 }
 .message.right .bubble { background: #007bff; color: white; border-bottom-right-radius: 2px; }
 .message.left .bubble { border-bottom-left-radius: 2px; }
 
-.message-time { font-size: 10px; color: #999; }
+.message-time { font-size: 10px; color: #999; white-space: nowrap; }
+.delete-btn { background: none; border: none; color: #ccc; cursor: pointer; font-size: 12px; padding: 0 5px; }
+.delete-btn:hover { color: #d9534f; }
 
-/* --- [4] 설정 및 입력창 --- */
-.settings-btn {
-    position: absolute; top: 15px; right: 20px;
-    background: #f0f0f0; border: none; border-radius: 50%;
-    width: 35px; height: 35px; cursor: pointer; font-size: 18px;
-}
+/* --- [4] 입력창 및 설정 메뉴 --- */
+.input-area { padding: 20px; display: flex; gap: 10px; border-top: 1px solid #eee; }
+.input-area input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; }
+.send-btn { padding: 0 15px; border: none; border-radius: 10px; background: #007bff; color: white; cursor: pointer; }
+
+.settings-btn { position: absolute; top: 18px; right: 20px; background: none; border: none; font-size: 20px; cursor: pointer; }
 .settings-menu {
-    position: absolute; top: 55px; right: 20px; background: white;
-    border: 1px solid #ddd; border-radius: 8px; display: none;
-    flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100;
+    position: absolute; top: 55px; right: 20px; background: white; border: 1px solid #ddd;
+    border-radius: 8px; display: none; flex-direction: column; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100;
 }
 .settings-menu.active { display: flex; }
 .menu-item { padding: 12px 15px; border: none; background: none; cursor: pointer; text-align: left; }
 .menu-item:hover { background: #f5f5f5; }
+.menu-item.delete { color: #d9534f; }
 
-.input-area { padding: 20px; display: flex; gap: 10px; border-top: 1px solid #eee; }
-.input-area input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; }
-.send-btn { padding: 0 20px; border: none; border-radius: 10px; background: #007bff; color: white; cursor: pointer; }
-
-/* --- [5] 모달 & 초대 태그 --- */
+/* --- [5] 모달 및 초대 태그 --- */
 #channel-modal {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000;
 }
-.modal-content { background: white; padding: 30px; border-radius: 15px; width: 380px; }
+.modal-content { background: white; padding: 25px; border-radius: 15px; width: 350px; }
 .input-group { display: flex; gap: 8px; margin: 10px 0; }
-.invited-list-container { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-.invited-tag { background: #e9ecef; padding: 5px 10px; border-radius: 20px; font-size: 12px; border: 1px solid #ddd; }
+.input-group input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px; }
+.input-group button { background: #333; color: white; border: none; padding: 0 10px; border-radius: 5px; cursor: pointer; }
+.invited-list-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.invited-tag { background: #e9ecef; padding: 4px 10px; border-radius: 15px; font-size: 11px; border: 1px solid #ddd; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.modal-actions button { flex: 1; padding: 10px; border: none; border-radius: 5px; cursor: pointer; }
+#save-channel-btn { background: #007bff; color: white; }
 
 /* --- [6] 다크 모드 --- */
+#theme-toggle { position: fixed; top: 15px; right: 15px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 2000; border: none; background: #333; color: white; }
+
 body.dark { background: #1a1a1a; }
 body.dark .container { background: #252525; }
 body.dark .sidebar-left, body.dark .sidebar-right { background: #1e1e1e; border-color: #333; color: #eee; }
-body.dark h2 { color: #fff; }
+body.dark h2, body.dark #channel-title { color: #fff; }
 body.dark .chat-area { background: #252525; }
 body.dark .bubble { background: #3d3d3d; color: #eee; }
 body.dark .message.right .bubble { background: #007bff; color: #fff; }
-body.dark .modal-content { background: #2d2d2d; color: #fff; }
 body.dark .input-area input { background: #333; color: #fff; border-color: #444; }
-
-#theme-toggle {
-    position: fixed; top: 15px; right: 15px; width: 40px; height: 40px;
-    border-radius: 50%; border: none; background: #333; color: #fff; cursor: pointer; z-index: 2000;
-}
-body.dark #theme-toggle { background: #fff; color: #333; }
+body.dark .modal-content { background: #2d2d2d; color: #fff; }
+body.dark .settings-menu { background: #2d2d2d; border-color: #444; }
+body.dark .menu-item { color: #eee; }
+body.dark .menu-item:hover { background: #3d3d3d; }
