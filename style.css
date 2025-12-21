@@ -1,512 +1,202 @@
-/* 초기 설정 (Reset & 전역 변수) */
+/* --- 부자연스러운 레이아웃 및 공통 요소 수정 --- */
 
-/* 1. 박스 모델 재정의: 패딩과 보더가 width/height 안에 포함되도록 설정 (Box Sizing) */
-*, *::before, *::after {
-    box-sizing: border-box;
-}
-
-/* 2. 전역 스타일 및 레이아웃 설정 (Body) */
 body {
     margin: 0;
     background: #e9eaed;
-    font-family: Arial, sans-serif;
-    /* 웹페이지 전체 스크롤 숨김 (채팅 영역 내 스크롤만 허용) */
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
     overflow: hidden;
-
-    /* Flexbox 설정으로 .container를 화면 중앙에 배치 */
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
 }
 
-/* 기본 레이아웃  */
-
 .container {
-    width: 90%;
-    /* 뷰포트 높이의 95%만 사용하여 디자인 요소가 잘리지 않도록 안전 여백 확보 */
-    height: 95vh;
+    width: 95%;
+    max-width: 1400px; /* 너무 퍼지지 않게 제한 */
+    height: 90vh;
     background: #ffffff;
-    /* body의 flex 속성으로 중앙 정렬되므로 margin은 0 */
-    margin: 0;
-    
-    /* Grid 레이아웃: 좌측 사이드바(250px) - 채팅 영역(자동) - 우측 사이드바(250px) */
     display: grid;
-    grid-template-columns: 250px auto 250px;
-    gap: 20px;
-    
-    padding: 30px;
+    grid-template-columns: 260px auto 260px;
+    gap: 0; /* 사이드바 경계를 명확히 하기 위해 0으로 설정 후 내부 패딩 활용 */
     border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    overflow: hidden; /* 자식 요소의 삐져나옴 방지 */
 }
 
-/*좌우 사이드바*/
-
-/* 좌/우 사이드바 공통 스타일 */
+/* 사이드바 공통 수정 */
 .sidebar-left, .sidebar-right {
-    background: #fafafa;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-    /* Grid/Flexbox에서 내용이 넘칠 때 부모가 커지는 것을 방지 */
-    min-height: 0;
-    /* 100% 높이를 채우고, 내용이 넘칠 경우 내부 스크롤 허용 */
-    height: 100%;
-    overflow-y: auto;
-}
-
-h2 {
-    margin: 0 0 20px;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.channel-list, .user-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.channel-list li,
-.user-list li {
+    background: #f8f9fa;
+    padding: 25px 15px;
+    border-right: 1px solid #eee;
     display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    font-size: 16px;
-    gap: 10px;
+    flex-direction: column;
 }
 
-.dot {
-    width: 14px;
-    height: 14px;
-    background: #8a8a8a;
-    border-radius: 50%;
+.sidebar-right {
+    border-right: none;
+    border-left: 1px solid #eee;
 }
 
-/* 채널 추가 버튼 */
-.add-btn {
-    margin-top: 10px;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    border: none;
-    background: #e1e1e1;
-    font-size: 20px;
+/* 리스트 항목 스타일 개선 (부자연스러운 간격 수정) */
+.channel-list li, .user-list li {
+    padding: 10px 12px;
+    border-radius: 8px;
     cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 4px;
 }
 
-/* 선택된 채널 목록 항목을 위한 스타일 */
+.channel-list li:hover { background: #e9ecef; }
+
+/* 선택된 채널 스타일 강화 */
 #channel_list li.selected {
-    background-color: #007bff; /* 파란색 배경 */
-    color: white; /* 흰색 텍스트 */
-    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,123,255,0.3);
 }
 
-/*채널 생성 팝업창*/
+/* --- 채널 생성 모달 (기존 형식에 맞춰 디자인 강화) --- */
 
 #channel-modal {
-    position: fixed; /* 화면 고정 */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* 어두운 배경 */
-    display: flex; /* 중앙 정렬을 위해 flex 사용 */
-    justify-content: center; /* 가로 중앙 정렬 */
-    align-items: center; /* 세로 중앙 정렬 */
-    z-index: 1000; /* 다른 요소 위에 표시 */
+    backdrop-filter: blur(4px); /* 배경 흐림 효과 추가 */
 }
 
 .modal-content {
     background: #fff;
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    width: 300px; /* 모달 너비 */
-    text-align: center;
-}
-
-#channel-name-input {
-    width: 90%;
-    padding: 10px;
-    margin: 15px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.modal-actions button {
-    padding: 8px 15px;
-    margin: 0 5px;
+    border-radius: 16px;
+    width: 380px; /* 약간 넓게 조정 */
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
 }
 
-#save-channel-btn {
-    background-color: #007bff;
-    color: white;
+.modal-content h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.2rem;
 }
 
-#cancel-channel-btn {
-    background-color: #6c757d;
-    color: white;
-}
-
-
-/*채팅 영역*/
-
-.chat-area {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
-    /* Grid에서 내용이 넘칠 때 부모가 커지는 것을 방지 */
-    min-height: 0;
-    /* 100% 높이를 채우도록 설정 */
-    height: 100%;
-    /* 💡 설정 버튼을 위한 기준점 설정 */
-    position: relative;
-}
-
-/* ⚙️ 설정 버튼 스타일 (h2와 수직 중앙 정렬) */
-.settings-btn {
-    position: absolute;
-    top: 15px; /* h2와 수직 중앙 정렬되도록 조정 */
-    right: 20px;
-
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #f0f0f0;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: #4a4a4a;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* chat-area 내부 다른 요소 위에 표시 */
-    z-index: 10;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-/*설정 메뉴 팝업*/
-
-.settings-menu {
-    /* 설정 버튼을 기준으로 위치 지정 */
-    position: absolute;
-    /* 톱니바퀴 버튼의 오른쪽 아래에 위치하도록 조정 */
-    top: 60px; 
-    right: 20px;
-    
-    /* 기본 상태에서는 숨김 */
-    display: none; 
-    
-    background: #ffffff;
+/* 입력창 공통 */
+#channel-name-input, #invite-email-input {
+    width: 100%;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 50; /* 채팅 영역의 다른 요소보다 위에 표시 */
-    min-width: 150px;
-    padding: 5px 0;
-}
-
-/* 팝업 메뉴가 보일 때 */
-.settings-menu.active {
-    display: block;
-}
-
-.menu-item {
-    display: block;
-    width: 100%;
-    padding: 10px 15px;
-    border: none;
-    background: none;
-    text-align: left;
     font-size: 14px;
-    color: #333;
+    margin-bottom: 10px;
+}
+
+.input-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+#check-email-btn {
+    padding: 0 15px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.1s;
+    white-space: nowrap;
 }
 
-.menu-item:hover {
-    background: #f0f0f0;
-}
-
-/* 채널 삭제하기 버튼에 경고 스타일 적용 */
-.menu-item.delete {
-    color: #d9534f; /* 빨간색 텍스트 */
-}
-
-.menu-item.delete:hover {
-    background: #fbecec; /* 연한 빨간색 배경 */
-}
-
-/*메시지 목록 영역*/
-
-.messages {
-    flex: 1; /* 남은 수직 공간을 모두 차지하여 높이 고정 */
-    margin-bottom: 20px;
-    /* 메시지 영역에만 스크롤 기능 부여 (핵심) */
+/* ⭐ 초대된 유저 태그 스타일 (기존 형식에 맞춘 새 디자인) */
+.invited-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+    max-height: 100px;
     overflow-y: auto;
 }
 
-/* 메시지 전체 컨테이너 (정렬용) */
-.message {
+.invited-tag {
+    background: #e9ecef;
+    color: #495057;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
     display: flex;
-    align-items: flex-end; /* 메시지 버블이 아래쪽에 붙도록 */
-    margin: 15px 0;
+    align-items: center;
+    border: 1px solid #dee2e6;
 }
 
-/* 사용자가 보낸 메시지를 오른쪽으로 정렬합니다. */
-.message.right {
-    justify-content: flex-end;
+.warning-text {
+    font-size: 12px;
+    color: #d9534f;
+    margin: 5px 0;
+    min-height: 15px;
 }
 
-.avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    margin: 0 10px;
-}
-
-/* 아바타 색상 클래스는 유지합니다. */
-.avatar.gray { background: #8a8a8a; }
-
-/* 1. 상대방 이름과 시간 등의 메타 정보 스타일링 */
-.message-meta {
-    margin-bottom: 2px; /* 이름과 버블 사이 간격 */
-    display: flex;
-    /* 내 메시지의 경우 오른쪽 정렬, 상대방 메시지의 경우 왼쪽 정렬은 JS에서 처리 */
-}
-
-.message-sender {
-    font-size: 0.75em; /* 이름 글씨 크기 작게 */
-    color: var(--text-secondary); /* 옅은 색상 */
-    margin-left: 10px; /* 왼쪽 여백 (상대방 메시지에만 해당) */
-}
-
-/* 2. 버블, 시간, 삭제 버튼을 감싸는 컨테이너 스타일링 */
-.message-content-wrapper {
-    display: flex;
-    align-items: flex-end; /* 버블과 시간을 아래쪽으로 정렬 */
-    gap: 5px; /* 요소들 간의 간격 */
-}
-
-/* 3. 시간 스타일링 */
-.message-time {
-    font-size: 0.65em; /* 시간 글씨를 가장 작게 */
-    color: var(--text-tertiary); /* 매우 옅은 색상 */
-    white-space: nowrap; /* 시간이 줄바꿈 되지 않도록 */
-}
-
-/* 4. 삭제 버튼 스타일링 (내 메시지 전용) */
-.delete-btn {
-    background: none;
-    border: none;
-    color: var(--text-tertiary); 
-    font-size: 0.7em;
-    cursor: pointer;
-    padding: 0 2px;
-    opacity: 0; /* 평소에는 숨겨놓고 */
-    transition: opacity 0.2s;
-}
-
-/* 마우스 오버 시 삭제 버튼 표시 */
-.message.right:hover .delete-btn {
-    opacity: 1; 
-}
-
-/* 💡 텍스트 버블 스타일: 회색 배경을 적용합니다. */
-.bubble {
-    max-width: 60%; /* 너비를 내용에 맞게 조절하되, 최대 60%를 넘지 않도록 */
-    width: fit-content;
-    height: auto;
-    min-height: 40px;
-    padding: 8px 12px;
-    /* chat-area의 흰색 배경(#ffffff)과 구별되도록 회색을 설정 */
-    background: #e8e8e8;
-    border-radius: 10px;
-    word-wrap: break-word;
-    white-space: normal;
-}
-
-/* 오른쪽 정렬된 (사용자) 텍스트 버블에 대한 스타일 */
-.message.right .bubble:not(.image-bubble) {
-    /* 사용자 메시지를 더 눈에 띄게 파란색 계열로 설정합니다. (텍스트 버블에만 적용) */
-    background: #007bff;
-    color: white;
-}
-
-
-/*입력 영역*/
-
-.input-area {
+/* 모달 하단 버튼 */
+.modal-actions {
     display: flex;
     gap: 10px;
+    margin-top: 20px;
 }
 
-.input-area input {
+.modal-actions button {
     flex: 1;
     padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    outline: none;
+    font-weight: bold;
+    border-radius: 8px;
 }
 
-/* 전송 버튼 */
-.send-btn {
-    width: 45px;
-    border: none;
-    border-radius: 10px;
-    background: #d1d1d1;
+/* --- 채팅 영역 및 버블 수정 --- */
+
+.chat-area {
+    padding: 0; /* 헤더 공간을 위해 0 */
+    position: relative;
+    background: #fff;
+}
+
+#channel-title {
+    padding: 20px 25px;
+    margin: 0;
+    border-bottom: 1px solid #eee;
     font-size: 18px;
-    cursor: pointer;
 }
 
-
-
-/*라이트/다크 모드 토글 버튼*/
-
-#theme-toggle {
-    /* Fixed 포지션으로 뷰포트 오른쪽 위에 고정 */
-    position: fixed; 
-    top: 10px; 
-    right: 10px;
-
-    /* 크기 및 스타일 */
-    width: 40px; 
-    height: 40px;
-    font-size: 20px; 
-    border-radius: 50%; 
-    border: none;
-    cursor: pointer;
-    
-    background: #4a4a4a; 
-    color: #fff;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1); 
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    z-index: 1000;
+.messages {
+    padding: 20px;
 }
 
-/* Dark Mode일 때 버튼 색상 조정 */
-body.dark #theme-toggle {
-    background: #ffffff; 
-    color: #4a4a4a; 
-    box-shadow: 0 3px 8px rgba(0,0,0,0.4); 
+.bubble {
+    font-size: 15px;
+    line-height: 1.5;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
 
-/*다크 모드 스타일*/
-
-body.dark {
-    background: #1f1f1f;
+/* 입력창 고정 위치 및 스타일 */
+.input-area {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    background: #fff;
 }
 
-/* 기본 컨테이너 */
-body.dark .container {
-    background: #2a2a2a;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+/* --- 다크 모드 보정 --- */
+
+body.dark .sidebar-left, body.dark .sidebar-right {
+    background: #252525;
+    border-color: #333;
 }
 
-/* 사이드바 및 채팅 영역 배경 */
-body.dark .sidebar-left,
-body.dark .sidebar-right,
-body.dark .chat-area {
-    background: #2f2f2f;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-}
-
-/* ⚙️ Dark Mode 설정 버튼 */
-body.dark .settings-btn {
-    background: #3a3a3a;
-    color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-}
-
-/* Dark Mode용 설정 메뉴 스타일 */
-body.dark .settings-menu {
-    background: #3a3a3a;
-    border: 1px solid #555;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-}
-
-body.dark .menu-item {
-    color: #e0e0e0;
-}
-
-body.dark .menu-item:hover {
-    background: #4a4a4a;
-}
-
-body.dark .menu-item.delete {
-    color: #ff8a80; /* Dark Mode에서 눈에 띄는 빨간색 */
-}
-
-body.dark .menu-item.delete:hover {
-    background: #5c3533; /* Dark Mode에서 연한 빨간색 배경 */
-}
-
-/* 텍스트 및 목록 */
-body.dark h2 {
-    color: #ffffff;
-}
-
-body.dark .channel-list li,
-body.dark .user-list li {
-    color: #e0e0e0;
-}
-
-body.dark .dot {
-    background: #b5b5b5;
-}
-
-body.dark .add-btn {
-    background: #3a3a3a;
-    color: white;
-}
-
-/* Dark Mode 선택된 채널 */
-body.dark #channel_list li.selected {
-    background-color: #555; 
-    color: #eee;
-}
-
-/* Dark Mode 모달 */
 body.dark .modal-content {
-    background: #333;
-    color: #eee;
+    background: #2a2a2a;
+    border: 1px solid #444;
 }
 
-body.dark .message.right .bubble:not(.image-bubble) {
-    /* Dark Mode에서 사용자 메시지 버블 색상 (파란색 유지) */
-    background: #4a8cff;
-    color: white;
-}
-
-/* 입력 필드 */
-body.dark .input-area input {
+body.dark .invited-tag {
     background: #3a3a3a;
-    border: 1px solid #555;
+    color: #eee;
+    border-color: #555;
+}
+
+body.dark #channel-name-input, body.dark #invite-email-input {
+    background: #1f1f1f;
+    border-color: #444;
     color: #fff;
-}
-
-/* 버튼 */
-body.dark .send-btn {
-    background: #4a4a4a;
-    color: white;
-}
-
-
-/* 💡 Dark Mode 닫기 버튼 스타일 */
-body.dark .preview-item .close-btn {
-    background: rgba(255, 255, 255, 0.5); /* Dark Mode에서는 반투명 흰색 */
-    color: black;
-
 }
