@@ -245,7 +245,9 @@ function disableInputs() {
 
 // 채널 선택 시 호출되는 함수
 async function selectChannel(id, name) {
-    if (currentChannelId === id) return;
+    if (currentChannelId === id && document.querySelectorAll('#user-list li').length > 0) {
+        return; 
+    }
   
     currentChannelId = id;
     
@@ -254,10 +256,51 @@ async function selectChannel(id, name) {
     if (headerTitle) {
         headerTitle.textContent = `# ${name}`; 
     }
+  
+    // 2. 이전 리스너 확실히 제거
+    if (membersUnsubscribe) {
+        membersUnsubscribe();
+        membersUnsubscribe = null;
+    }
+
+    const userListUl = document.getElementById('user-list');
+    const channelRef = db.collection('channels').doc(id);
     
-    // 3. UI 업데이트: 채널 목록에서 선택된 항목 강조
-    const channelList = document.getElementById('channel_list');
-    
+    membersUnsubscribe = channelRef.onSnapshot(async (doc) => {
+        if (!doc.exists) return;
+
+        const memberUids = doc.data().members || [];
+        
+        try {
+            // 모든 멤버 이름을 가져올 때까지 기다림
+            const memberNamePromises = memberUids.map(uid => 
+                db.collection('users').doc(uid).get().then(uDoc => {
+                    if (uDoc.exists) {
+                        return uDoc.data().displayName || uDoc.data().email;
+                    }
+                    return "Unknown User";
+                })
+            );
+
+            const memberNames = await Promise.all(memberNamePromises);
+
+            // ⭐ 핵심: UI를 그리기 직전에 '전체'를 한 번에 갈아끼웁니다.
+            // appendChild 대신 전체 HTML 문자열을 만들어 넣는 방식이 중복 방지에 가장 확실합니다.
+            const newHtml = memberNames.map(name => `
+                <li>
+                    <span class="avatar gray"></span> 
+                    ${name}
+                </li>
+            `).join('');
+
+            if (userListUl) {
+                userListUl.innerHTML = newHtml; // 기존 내용을 완전히 덮어씁니다.
+            }
+        } catch (error) {
+            console.error("멤버 목록 업데이트 실패:", error);
+        }
+    });
+  
     // 기존에 선택된 항목의 강조 해제
     channelList.querySelectorAll('li').forEach(item => {
         item.classList.remove('selected');
@@ -282,104 +325,6 @@ async function selectChannel(id, name) {
     // 4. disabled 프로퍼티를 false로 설정하여 입력/전송 필드를 활성화합니다.
     if (inputBOX) { inputBOX.disabled = false; }
     if (sendBOX) { sendBOX.disabled = false; }
-
-    // 4. 기존 리스너 해제
-    if (membersUnsubscribe) membersUnsubscribe();
-
-    const channelRef = db.collection('channels').doc(id);
-
-    membersUnsubscribe = channelRef.onSnapshot(async (doc) => {
-        if (!doc.exists) return;
-
-        const memberUids = doc.data().members || [];
-        
-        // 중요: 데이터를 모두 가져온 뒤 '한 번에' 렌더링하기 위해 임시 HTML 생성
-        try {
-            const memberNamePromises = memberUids.map(uid => 
-                db.collection('users').doc(uid).get().then(uDoc => {
-                    if (uDoc.exists) {
-                        const d = uDoc.data();
-                        return d.displayName || d.email || "Unknown";
-                    }
-                    return "Unknown";
-                })
-            );
-
-            const memberNames = await Promise.all(memberNamePromises);
-
-            // ⭐ UI 업데이트 직전에 한 번 더 비우고, innerHTML로 한 번에 교체
-            // 이렇게 하면 연타 시 appendChild가 겹치는 문제를 원천 차단합니다.
-            let newContent = "";
-            memberNames.forEach(name => {
-                newContent += `
-                    <li>
-                        <span class="avatar gray"></span> 
-                        ${name}
-                    </li>
-                `;
-            });
-            
-            if (userListUl) {
-                userListUl.innerHTML = newContent;
-            }
-        } catch (err) {
-            console.error("멤버 로드 오류:", err);
-        }
-    });
-
-    // 💡 새 멤버 리스너 설정: 채널 문서의 변화를 실시간 감지
-    membersUnsubscribe = channelRef.onSnapshot(async (doc) => {
-        if (!doc.exists) {
-            console.warn("채널 문서가 존재하지 않습니다.");
-            return;
-        }
-
-        const channelData = doc.data();
-        const memberUids = channelData.members || [];
-        
-        // 5. 유저 목록 UI 초기화 후 다시 그리기
-        if (userListUl) {
-            userListUl.innerHTML = ''; // 기존 목록 초기화
-        }
-
-        // 모든 멤버 이름 조회 Promise 생성 (기존 로직 재사용)
-        const memberNamePromises = memberUids.map(uid => {
-            return db.collection('users').doc(uid).get()
-                .then(doc => {
-                    if (doc.exists) {
-                        const userData = doc.data();
-                        return userData.displayName || userData.email || `User (${uid.substring(0, 4)}...)`;
-                    }
-                    return `Unknown User (${uid.substring(0, 4)}...)`;
-                })
-                .catch(error => {
-                    console.error("멤버 정보 조회 오류:", uid, error);
-                    return `Error User (${uid.substring(0, 4)}...)`;
-                });
-        });
-
-        // 모든 Promise가 완료될 때까지 대기
-        const memberNames = await Promise.all(memberNamePromises);
-
-        // UI에 멤버 목록 추가
-        if (userListUl) {
-            memberNames.forEach(member => {
-                const list_name = document.createElement('li');
-                list_name.innerHTML = `
-                    <span class="avatar gray"></span> 
-                    ${member} 
-                `; 
-                userListUl.appendChild(list_name);
-            });
-        }
-    }, error => {
-        console.error("채널 멤버 리스너 오류:", error);
-    });
-
-    // 6. ⭐ 기존 메시지 리스너 해제 및 새 리스너 설정
-    if (messageUnsubscribe) {
-        messageUnsubscribe(); // 이전 채널의 리스너 해제
-    }
 
     const outputArea = document.getElementById('outputArea');
 
@@ -593,18 +538,35 @@ async function deleteCurrentChannel() {
     }
 }
 
-// ⭐⭐ 핵심 수정: 인증 상태 변경 리스너를 사용하여 채널 목록을 필터링합니다. ⭐⭐
+let channelsUnsubscribe = null;
+  
+
 auth.onAuthStateChanged(user => {
-    // 💡 (선택 사항: 사용자 정보 저장/업데이트 로직)
     if (user) {
-        // user.uid로 users 컬렉션에 사용자 정보 저장/업데이트
-        db.collection('users').doc(user.uid).set({
-            email: user.email,
-            displayName: user.displayName || user.email,
-            // 기타 사용자 정보
-        }, { merge: true }); // 기존 필드는 유지하고 업데이트
+        // 기존 채널 목록 리스너가 있다면 해제
+        if (channelsUnsubscribe) channelsUnsubscribe();
+
+        const channelList = document.getElementById('channel_list');
         
+        // 내 채널 목록 가져오기
+        channelsUnsubscribe = db.collection('channels')
+            .where('members', 'array-contains', user.uid)
+            .orderBy('createdAt', 'asc')
+            .onSnapshot((snapshot) => {
+                // 채널 목록 UI 초기화 (중복 방지)
+                channelList.innerHTML = ''; 
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const li = document.createElement('li');
+                    li.setAttribute('data-channel-id', doc.id);
+                    li.textContent = `# ${data.name}`;
+                    li.onclick = () => selectChannel(doc.id, data.name);
+                    channelList.appendChild(li);
+                });
+            });
     }
+});
 
     // ⭐ 1. 채널 목록 리스너 해제 (재설정 전에)
     // 이전에 설정된 채널 리스너를 해제하는 전역 변수가 필요할 수 있지만, 
@@ -974,6 +936,7 @@ saveChannelBtn.addEventListener('click', async () => { // ⭐ async 키워드 �
 
 
 });
+
 
 
 
