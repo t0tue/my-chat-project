@@ -1,9 +1,12 @@
-/* --- 부자연스러운 레이아웃 및 공통 요소 수정 --- */
+/* 1. 박스 모델 및 초기화 */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
     background: #e9eaed;
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    font-family: 'Pretendard', sans-serif;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -11,26 +14,28 @@ body {
     min-height: 100vh;
 }
 
+/* 2. 메인 레이아웃 (Grid 유지) */
 .container {
     width: 95%;
-    max-width: 1400px; /* 너무 퍼지지 않게 제한 */
-    height: 90vh;
+    height: 95vh;
     background: #ffffff;
     display: grid;
-    grid-template-columns: 260px auto 260px;
-    gap: 0; /* 사이드바 경계를 명확히 하기 위해 0으로 설정 후 내부 패딩 활용 */
+    /* 좌측(250px) - 중앙(자동) - 우측(250px) 고정 */
+    grid-template-columns: 250px 1fr 250px; 
     border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-    overflow: hidden; /* 자식 요소의 삐져나옴 방지 */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    overflow: hidden;
 }
 
-/* 사이드바 공통 수정 */
+/* 3. 사이드바 공통 */
 .sidebar-left, .sidebar-right {
-    background: #f8f9fa;
-    padding: 25px 15px;
-    border-right: 1px solid #eee;
+    background: #fafafa;
+    padding: 20px;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    border-right: 1px solid #eee;
 }
 
 .sidebar-right {
@@ -38,165 +43,39 @@ body {
     border-left: 1px solid #eee;
 }
 
-/* 리스트 항목 스타일 개선 (부자연스러운 간격 수정) */
-.channel-list li, .user-list li {
-    padding: 10px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-    margin-bottom: 4px;
-}
-
-.channel-list li:hover { background: #e9ecef; }
-
-/* 선택된 채널 스타일 강화 */
-#channel_list li.selected {
-    background-color: #007bff;
-    color: white;
-    box-shadow: 0 4px 10px rgba(0,123,255,0.3);
-}
-
-/* --- 채널 생성 모달 (기존 형식에 맞춰 디자인 강화) --- */
-
-#channel-modal {
-    backdrop-filter: blur(4px); /* 배경 흐림 효과 추가 */
-}
-
-.modal-content {
-    background: #fff;
-    padding: 30px;
-    border-radius: 16px;
-    width: 380px; /* 약간 넓게 조정 */
-    border: none;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-}
-
-.modal-content h3 {
-    margin-top: 0;
-    color: #333;
-    font-size: 1.2rem;
-}
-
-/* 입력창 공통 */
-#channel-name-input, #invite-email-input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    margin-bottom: 10px;
-}
-
-.input-group {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-}
-
-#check-email-btn {
-    padding: 0 15px;
-    background: #333;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-/* ⭐ 초대된 유저 태그 스타일 (기존 형식에 맞춘 새 디자인) */
-.invited-list-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 10px 0;
-    max-height: 100px;
-    overflow-y: auto;
-}
-
-.invited-tag {
-    background: #e9ecef;
-    color: #495057;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    border: 1px solid #dee2e6;
-}
-
-.warning-text {
-    font-size: 12px;
-    color: #d9534f;
-    margin: 5px 0;
-    min-height: 15px;
-}
-
-/* 모달 하단 버튼 */
-.modal-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.modal-actions button {
-    flex: 1;
-    padding: 12px;
-    font-weight: bold;
-    border-radius: 8px;
-}
-
-/* --- 채팅 영역 및 버블 수정 --- */
-
+/* 4. 채팅 영역 (Flex 구조) */
 .chat-area {
-    padding: 0; /* 헤더 공간을 위해 0 */
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     position: relative;
-    background: #fff;
+    min-width: 0; /* 내부 요소 넘침 방지 */
 }
 
 #channel-title {
-    padding: 20px 25px;
+    padding: 20px;
     margin: 0;
+    font-size: 1.2rem;
     border-bottom: 1px solid #eee;
-    font-size: 18px;
 }
 
 .messages {
+    flex: 1;
     padding: 20px;
+    overflow-y: auto;
 }
 
-.bubble {
-    font-size: 15px;
-    line-height: 1.5;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-}
-
-/* 입력창 고정 위치 및 스타일 */
 .input-area {
     padding: 20px;
+    display: flex;
+    gap: 10px;
     border-top: 1px solid #eee;
-    background: #fff;
 }
 
-/* --- 다크 모드 보정 --- */
-
-body.dark .sidebar-left, body.dark .sidebar-right {
-    background: #252525;
-    border-color: #333;
-}
-
-body.dark .modal-content {
-    background: #2a2a2a;
-    border: 1px solid #444;
-}
-
-body.dark .invited-tag {
-    background: #3a3a3a;
-    color: #eee;
-    border-color: #555;
-}
-
-body.dark #channel-name-input, body.dark #invite-email-input {
-    background: #1f1f1f;
-    border-color: #444;
-    color: #fff;
-}
+/* 5. 채널 생성 모달 (기존 디자인 강화) */
+#channel-modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background
