@@ -116,4 +116,77 @@ body {
 .bubble {
     max-width: 60%;
     padding: 10px 15px;
-    border-radius:
+    border-radius: 15px;
+    background: #f1f1f1;
+    line-height: 1.4;
+    font-size: 15px;
+}
+
+.message.right .bubble {
+    background: #007bff;
+    color: white;
+}
+
+/* 5. 입력창 영역 */
+.input-area {
+    padding: 20px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid #eee;
+}
+
+.input-area input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+}
+
+.send-btn {
+    padding: 0 20px;
+    border: none;
+    border-radius: 10px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+/* 6. 채널 생성 모달 (기존 양식 맞춤형) */
+#channel-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 380px;
+}
+
+.input-group { display: flex; gap: 8px; margin-bottom: 10px; }
+#invite-email-input { flex: 1; margin: 0; }
+#check-email-btn { background: #333; color: white; border: none; border-radius: 4px; cursor: pointer; padding: 0 10px; }
+
+.invited-list-container {
+    display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0;
+}
+.invited-tag {
+    background: #e9ecef;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+}
+
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.modal-actions button { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; }
+#save-channel-btn { background: #007bff; color: white; }
+#cancel-channel-btn { background: #6c757d; color: white; }
+
+/* 7. 기타 */
+#theme-toggle { position: fixed; top: 10px; right: 10px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 1000; }
