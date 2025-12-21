@@ -15,7 +15,6 @@
 
         <main class="chat-area">
             <h2 id="channel-title">채널을 선택하세요</h2>
-            
             <button class="settings-btn" id="settingsBtn">⚙️</button>
 
             <div class="settings-menu" id="settingsMenu">
@@ -26,12 +25,9 @@
 
             <div class="messages" id="outputArea"></div>
 
-            <div class="preview" id="preview"></div>
-
             <div class="input-area">
                 <input type="text" id="userInput" placeholder="메시지를 입력하세요..." disabled/>
-                <input type="file" id="imageFile" accept="image/*" multiple style="display: none;" disabled/>
-                <button class="send-btn" id="send-btn" disabled>➡️</button>
+                <button class="send-btn" id="send-btn" onclick="sendMessage()" disabled>➡️</button>
             </div>
         </main>
 
@@ -45,9 +41,9 @@
                 <h3>새 채널 생성</h3>
                 <input type="text" id="channel-name-input" placeholder="채널 이름 입력">
                 <hr>
-                <label for="invite-email-input">사용자 초대 (이메일):</label>
+                <label>사용자 초대 (이메일):</label>
                 <div class="input-group">
-                    <input type="email" id="invite-email-input" placeholder="초대할 이메일">
+                    <input type="email" id="invite-email-input" placeholder="이메일 입력">
                     <button id="check-email-btn">추가</button>
                 </div>
                 <p id="invite-warning-text" class="warning-text"></p>
