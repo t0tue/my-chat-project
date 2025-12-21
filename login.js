@@ -1,4 +1,5 @@
-import {API_KEY} from './secret.js';
+const API_KEY = import.meta.env.MY_KEYS.split(',');
+
 const app = firebase.initializeApp(API_KEY);
 const auth = firebase.auth(app);
 const db = firebase.firestore(app);
