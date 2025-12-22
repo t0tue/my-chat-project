@@ -158,11 +158,19 @@ container.innerHTML = `
     outputArea.scrollTop = outputArea.scrollHeight;
 }
 
-// 메시지 삭제
-function deleteMessage(messageId) {
+// 기존 코드 대신 아래와 같이 수정
+window.deleteMessage = function(messageId) {
     if (!confirm("메시지를 삭제하시겠습니까?")) return;
-    db.collection('messages').doc(messageId).delete().catch(console.error);
-}
+    
+    db.collection('messages').doc(messageId).delete()
+        .then(() => {
+            console.log("메시지 삭제 성공");
+        })
+        .catch((error) => {
+            console.error("삭제 실패:", error);
+            alert("삭제 권한이 없거나 오류가 발생했습니다.");
+        });
+};
 
 // 사용자 초대
 async function inviteUserToChannel() {
@@ -337,5 +345,6 @@ document.addEventListener('DOMContentLoaded', () => {
         channelModal.style.display = 'none';
     });
 });
+
 
 
